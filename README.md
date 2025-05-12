@@ -1,7 +1,7 @@
 # ProgBattle
 
 ## Outline
-Your task is to create a web application for hosting a gaming tournament, where users can form teams, write bot-scripts, performs test battles against system bots, challenge other teams and compete in finally of the top teams.
+Your task is to create a web application for hosting a gaming tournament, where users can form teams, write bot-scripts, performs test battles against system bots, challenge other teams and compete in the final of the top teams.
 
 ## You are provided with
 1. [`engine.py`](engine.py) it runs the game, you may try one yourself by `python3 engine.py --p1 bot1.py --p2 bot1.py` and creates a [`game_log.csv`](game_log.csv)
