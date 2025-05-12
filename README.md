@@ -22,8 +22,10 @@ Your task is to create a web application for hosting a gaming tournament, where 
    3. Update the global leaderboard accordingly, you may use any scoring strategy.
    4. On user request show the simulations of the game similar to this:
       (you may use any other way to render the simulation, but it should not be a video fetched from backend, it should be rendered using the logs at the frontend itself, `To help you: Research about HTML Canvas`)
-      
-      <video controls src="simulation.mov" title="Title" width=300 height= 300></video>
+
+      [Simulation video](simulation.mp4)
+
+      <video controls src="simulation.mp4" title="Title" width=300 height= 300></video>
  
    5. **`Bonus`** Check the submission using some sort of plagiarism detector and flag those submissions for the admin.
    6. **`Bonus`** It is possible that the simulation or the evaluation can't be done on the spot due to over load on serve, structure you project to tackle such situations.
