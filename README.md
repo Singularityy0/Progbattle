@@ -1,7 +1,14 @@
-# ProgBattle
+# Project ProgBattle
+Escape the Maze with Code  
 
-## Outline
-Your task is to create a web application for hosting a gaming tournament, where users can form teams, write bot-scripts, performs test battles against system bots, challenge other teams and compete in the final of the top teams.
+The World was shattered after the big disaster. The AI systems went down, half of the population was missing and a major part of the technology in the world stopped working. 
+
+The World Governments came together to start **Mission Maze** having the objective of finding the best minds on earth and train them to bring back all the lost information and technology as fast as possible.
+
+You are appointed as the Maze Maker and Selector. To select the best minds on earth you decide to start project ProgBattle which will focus on creating a web portal for hosting a tournament. Where participants will form teams, write intelligent bot scripts, run test battles against system bots, challenge rival teams, and climb the leaderboard in a race to the top.
+
+Only the smartest minds will make it through. Those who reach the final stage will be seen as the best ready to lead Mission Maze and help bring back the lost knowledge and technology.
+
 
 ## You are provided with
 1. [`engine.py`](engine.py) it runs the game, you may try one yourself by `python3 engine.py --p1 bot1.py --p2 bot1.py` and creates a [`game_log.csv`](game_log.csv)
