@@ -260,6 +260,9 @@ The backend uses **SQLite** (file: `progbattle_new.db`) with SQLAlchemy ORM for 
   - During login, the submitted password is checked against the stored hash using `check_password_hash`.
   - This ensures that even if the database is compromised, raw passwords are not exposed.
 
+## Note 
+- I tried deploying the website to https://progbattle.onrender.com/ but I dont know how to fix this , for some reason it shows "an error occured" when I try to Register
+- maybe it's not able to create the database or something
 
 
 
