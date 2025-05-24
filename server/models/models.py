@@ -10,14 +10,18 @@ team_members = db.Table(
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    username = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     teams = db.relationship("Team", secondary=team_members, backref="members")
 
 class Team(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     max_size = db.Column(db.Integer, default=4)
+    round = db.Column(db.Integer, default=1)  # 1 for system bots, 2 for team vs team
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    submissions = db.relationship("Submission", backref="team", lazy=True)
 
 class Submission(db.Model):
     id = db.Column(db.Integer, primary_key=True)

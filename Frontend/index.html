@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProgBattle - Escape the Maze</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div class="logo">ProgBattle</div>
+            <div class="nav-links" id="navLinks">
+                <a href="#" class="active" data-page="home">Home</a>
+                <a href="#" data-page="leaderboard">Leaderboard</a>
+                <a href="#" data-page="team" id="teamLink" style="display: none;">Team</a>
+                <a href="#" data-page="submit" id="submitLink" style="display: none;">Submit Bot</a>
+                <a href="#" data-page="auth" id="authLink">Login/Register</a>
+                <a href="#" id="logoutLink" style="display: none;">Logout</a>
+            </div>
+        </nav>
+
+        <main>
+            <!-- Home Page -->
+            <div class="page active" id="homePage">
+                <div class="hero">
+                    <h1>Welcome to ProgBattle</h1>
+                    <p>Escape the Maze with Code</p>
+                    <div class="hero-content">
+                        <p>The World was shattered after the big disaster. The AI systems went down, half of the population was missing and a major part of the technology in the world stopped working.</p>
+                        <p>You are appointed as a participant in Mission Maze. Write intelligent bot scripts, challenge rival teams, and climb the leaderboard in a race to the top!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auth Page -->
+            <div class="page" id="authPage">
+                <div class="auth-container">
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" data-tab="login">Login</button>
+                        <button class="auth-tab" data-tab="register">Register</button>
+                    </div>
+                    <div class="auth-form active" id="loginForm">
+                        <h2>Login</h2>
+                        <input type="text" placeholder="Username" id="loginUsername">
+                        <input type="password" placeholder="Password" id="loginPassword">
+                        <button onclick="login()">Login</button>
+                    </div>
+                    <div class="auth-form" id="registerForm">
+                        <h2>Register</h2>
+                        <input type="text" placeholder="Username" id="registerUsername">
+                        <input type="password" placeholder="Password" id="registerPassword">
+                        <button onclick="register()">Register</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Page -->
+            <div class="page" id="teamPage">
+                <div class="team-container">
+                    <div class="create-team">
+                        <h2>Create Team</h2>
+                        <input type="text" placeholder="Team Name" id="teamName">
+                        <button onclick="createTeam()">Create Team</button>
+                    </div>
+                    <div class="team-list">
+                        <h2>Available Teams</h2>
+                        <div id="teamsList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Bot Page -->
+            <div class="page" id="submitPage">
+                <div class="submit-container">
+                    <h2>Submit Your Bot</h2>
+                    <p>Upload your Python bot file to compete against system bots!</p>
+                    <div class="submission-form">
+                        <input type="file" id="botFile" accept=".py">
+                        <button onclick="submitBot()">Submit Bot</button>
+                    </div>
+                    <div class="submission-history">
+                        <h3>Submission History</h3>
+                        <div id="submissionsList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leaderboard Page -->
+            <div class="page" id="leaderboardPage">
+                <div class="leaderboard-container">
+                    <div class="leaderboard-tabs">
+                        <button class="leaderboard-tab active" data-round="1">Round 1</button>
+                        <button class="leaderboard-tab" data-round="2">Round 2</button>
+                    </div>
+                    <div class="leaderboard-content">
+                        <table id="leaderboardTable">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Team</th>
+                                    <th>Score</th>
+                                    <th>Matches</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div id="toast" class="toast"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
