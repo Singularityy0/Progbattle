@@ -20,6 +20,8 @@ class Team(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     max_size = db.Column(db.Integer, default=4)
     round = db.Column(db.Integer, default=1)  # 1 for system bots, 2 for team vs team
+    matches_played = db.Column(db.Integer, default=0)  # Track number of matches played
+    is_qualified = db.Column(db.Boolean, default=False)  # Track if qualified for round 2
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     submissions = db.relationship("Submission", backref="team", lazy=True)
 

@@ -14,12 +14,13 @@ def round_leaderboard(round_num):
         db.session.query(
             Team.id,
             Team.name,
-            func.sum(Submission.score).label("total_score"),
-            func.count(Submission.id).label("matches_played")
+            Team.matches_played,
+            Team.is_qualified,
+            func.sum(Submission.score).label("total_score")
         )
         .join(Submission, Submission.team_id == Team.id)
         .filter(Team.round == round_num)
-        .group_by(Team.id, Team.name)
+        .group_by(Team.id, Team.name, Team.matches_played, Team.is_qualified)
         .order_by(func.sum(Submission.score).desc())
         .all()
     )
@@ -27,9 +28,10 @@ def round_leaderboard(round_num):
     leaderboard_data = [{
         "team_id": team_id,
         "team_name": team_name,
-        "total_score": total_score,
-        "matches_played": matches_played
-    } for team_id, team_name, total_score, matches_played in results]
+        "matches_played": matches_played,
+        "is_qualified": is_qualified,
+        "total_score": float(total_score)
+    } for team_id, team_name, matches_played, is_qualified, total_score in results]
 
     return jsonify(leaderboard_data)
 

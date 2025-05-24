@@ -73,21 +73,18 @@
             <div class="page" id="submitPage">
                 <div class="submit-container">
                     <h2>Submit Your Bot</h2>
-                    <p>Upload your Python bot file to compete against system bots!</p>
-                    <div class="submission-limits">
-                        <div class="limit-info">
-                            <p><i class="fas fa-clock"></i> Hourly Limit: <span id="hourlySubmissionsLeft">4</span>/4 submissions remaining</p>
-                            <p><i class="fas fa-calendar"></i> Daily Limit: <span id="dailySubmissionsLeft">10</span>/10 submissions remaining</p>
-                        </div>
-                        <div class="limit-reset">
-                            <p>Next hourly reset: <span id="hourlyResetTime">--:--</span></p>
-                            <p>Next daily reset: <span id="dailyResetTime">--:--</span></p>
-                        </div>
-                    </div>
-                    <div class="submission-form">
-                        <div id="hourlyLimitNote" style="display:none; color: #d32f2f; font-weight: bold; margin-bottom: 10px;">
-                            Hourly submission limit reached. Please wait for the next hour to submit again.
-                        </div>
+                    <div class="score-explanation" style="margin-bottom: 1.5rem;">
+                        <strong>Scoring Rules:</strong><br>
+                        <ul style="margin: 0 0 0 1.2em; padding: 0;">
+                            <li><b>Win</b>: 5 points</li>
+                            <li><b>Draw</b>: 2 points</li>
+                            <li><b>Loss</b>: 0 points</li>
+                            <li><b>Bonus</b>: +1 point for every 3 goals your bot scores in a match</li>
+                        </ul>
+                        <br>
+                        <strong>Submission Policy:</strong><br>
+                        You are allowed to submit up to <b>10 bots in Round 1</b>. Your team's <b>cumulative score</b> from these 10 matches will be used for leaderboard evaluation and qualification to the next round.
+                    </div>                    <div class="submission-form">
                         <input type="file" id="botFile" accept=".py">
                         <button onclick="submitBot()">Submit Bot</button>
                     </div>
@@ -99,20 +96,26 @@
             </div><!-- Simulations Page -->
             <div class="page" id="simulationsPage">
                 <div class="simulations-container">
-                    <h2>Game Simulations</h2>
-                    <div class="simulation-controls">
-                        <input type="file" id="logFile" accept=".csv">
-                        <button onclick="loadSimulation()" class="sim-btn">Load Simulation</button>
-                        <div class="playback-controls">
-                            <button onclick="playSimulation()" id="playBtn" disabled>Play</button>
-                            <button onclick="pauseSimulation()" id="pauseBtn" disabled>Pause</button>
-                            <button onclick="resetSimulation()" id="resetBtn" disabled>Reset</button>
-                            <input type="range" id="simulationSpeed" min="1" max="10" value="5">
-                            <label for="simulationSpeed">Speed</label>
-                        </div>
+                    <h2>Battle Simulations</h2>
+                    <div class="simulation-uploader">
+                        <input type="file" id="logFile" accept=".csv" />
+                        <button onclick="loadSimulation()">Load Simulation</button>
                     </div>
-                    <div class="simulation-view">
+                    <div class="simulation-viewer">
                         <canvas id="gameCanvas" width="600" height="600"></canvas>
+                        <div class="simulation-controls">
+                            <button id="playPauseBtn"><i class="fas fa-play"></i></button>
+                            <button id="resetBtn"><i class="fas fa-undo"></i></button>
+                            <div class="speed-control">
+                                <label for="speedSlider">Speed:</label>
+                                <input type="range" id="speedSlider" min="1" max="100" value="50">
+                                <span id="speedValue">50%</span>
+                            </div>
+                        </div>
+                        <div class="simulation-stats">
+                            <div>Step: <span id="currentStep">0</span></div>
+                            <div>Score: <span id="score">0 - 0</span></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -125,6 +128,7 @@
                         <button class="leaderboard-tab" data-round="2">Round 2</button>
                     </div>
                     <div class="leaderboard-content">
+                        <div class="tournament-status"></div>
                         <table id="leaderboardTable">
                             <thead>
                                 <tr>
@@ -132,6 +136,7 @@
                                     <th>Team</th>
                                     <th>Score</th>
                                     <th>Matches</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>

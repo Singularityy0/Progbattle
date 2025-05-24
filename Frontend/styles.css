@@ -1,12 +1,23 @@
-/* Modern variables */
+/* Rick and Morty Theme Variables */
 :root {
-    --primary-color: #6C63FF;
-    --secondary-color: #4CAF50;
-    --background-color: #f5f5f5;
-    --text-color: #333;
-    --accent-color: #FF6B6B;
-    --hover-color: #5046e5;
-    --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --primary-color: #6bff2d;    /* Brighter portal green */
+    --secondary-color: #00b9d3;  /* Brighter Rick's hair blue */
+    --accent-color: #19e6f1;     /* Brighter cyan */
+    --background-color: #121212; /* Darker background */
+    --card-background: #1e1e1e;  /* Slightly lighter dark */
+    --text-color: #e6e6e6;       /* Slightly off-white for less eye strain */
+    --text-secondary: #c7c7c7;   /* Lighter secondary text for better contrast */
+    --border-color: #2a2a2a;     /* Subtle borders */
+    --highlight-color: #fff047;  /* Brighter yellow accent */
+    --hover-color: #4cd40c;      /* Darker portal green */
+    --shadow: 0 4px 12px rgba(107, 255, 45, 0.35);  /* Enhanced glow effect */
+    --input-background: #252525; /* Slightly lighter than card background */
+    --error-color: #ff4f4f;     /* Bright red for errors */
+    --success-color: #4caf50;   /* Success green */
+    --link-color: #00b9d3;      /* Bright blue for links */
+    --disabled-color: #666666;  /* Muted gray for disabled elements */
+    --table-hover: rgba(107, 255, 45, 0.1); /* Subtle green hover effect */
+    --highlight-yellow: #fff047;  /* Bright yellow for important text */
 }
 
 /* Reset and base styles */
@@ -21,6 +32,7 @@ body {
     line-height: 1.6;
     background-color: var(--background-color);
     color: var(--text-color);
+    font-weight: 400;  /* Slightly bolder base font */
 }
 
 .container {
@@ -31,13 +43,14 @@ body {
 
 /* Navbar styles */
 .navbar {
-    background-color: white;
+    background-color: var(--card-background);
     padding: 1rem;
     box-shadow: var(--shadow);
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    border-bottom: 2px solid var(--primary-color);
 }
 
 .logo {
@@ -64,9 +77,10 @@ body {
 .page {
     display: none;
     padding: 2rem;
-    background: white;
+    background: var(--card-background);
     border-radius: 8px;
     box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
 }
 
 .page.active {
@@ -129,8 +143,17 @@ body {
     width: 100%;
     padding: 0.8rem;
     margin-bottom: 1rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
+    background: var(--background-color);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(166, 226, 46, 0.2);
 }
 
 .auth-form button {
@@ -151,12 +174,17 @@ body {
 /* Team styles */
 .team-card {
     padding: 1.5rem;
-    background: white;
+    background: var(--card-background);
     border-radius: 8px;
     box-shadow: var(--shadow);
     margin-bottom: 1.5rem;
-    border: 1px solid #eee;
+    border: 1px solid var(--border-color);
     transition: all 0.3s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(166, 226, 46, 0.3);
 }
 
 .team-card.my-team {
@@ -186,7 +214,7 @@ body {
 
 .member.current-user {
     background-color: var(--primary-color);
-    color: white;
+    color: #000000;
     border: none;
 }
 
@@ -240,7 +268,7 @@ button:disabled:hover {
 
 .team-list {
     padding: 2rem;
-    background: white;
+    background: #000000;
     border-radius: 8px;
     box-shadow: var(--shadow);
 }
@@ -260,13 +288,26 @@ button:disabled:hover {
 
 /* Submission styles */
 .submission-card {
-    background: white;
+    background: var(--card-background);
     border-radius: 8px;
     box-shadow: var(--shadow);
     margin-bottom: 1.5rem;
     padding: 1.5rem;
-    border: 1px solid #eee;
+    border: 1px solid var(--border-color);
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.submission-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 100%;
+    background: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
 }
 
 .submission-card:hover {
@@ -303,9 +344,27 @@ button:disabled:hover {
 /* Match result styles */
 .score-details {
     background-color: var(--background-color);
-    padding: 1rem;
+    padding: 1.5rem;
     border-radius: 6px;
     margin: 1rem 0;
+    border: 1px solid var(--border-color);
+    position: relative;
+}
+
+.score-details p {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+    color: var(--text-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.score-details p:first-child {
+    color: var(--primary-color);
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(166, 226, 46, 0.3);
 }
 
 .score-details p {
@@ -356,19 +415,31 @@ button:disabled:hover {
 
 table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     margin-top: 1rem;
+    background: var(--card-background);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
 }
 
 th, td {
     padding: 1rem;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--border-color);
 }
 
 th {
-    background-color: #f5f5f5;
+    background-color: var(--background-color);
     font-weight: 600;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(166, 226, 46, 0.2);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+tr:hover {
+    background-color: var(--table-hover);
 }
 
 /* Toast notification */
@@ -542,7 +613,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* Simulation page styles */
 .simulations-container {
-    background-color: white;
+    background-color: #cf7171;
     padding: 2rem;
     border-radius: 8px;
     box-shadow: var(--shadow);
@@ -593,9 +664,300 @@ input[type="range"]::-webkit-slider-thumb {
 #gameCanvas {
     border: 2px solid var(--primary-color);
     border-radius: 8px;
-    background-color: #fff;
+    background-color: #373131;
 }
 
 #simulationSpeed {
     width: 100px;
+}
+
+/* Simulation Page Styles */
+.simulations-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.simulation-uploader {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.simulation-viewer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#gameCanvas {
+    background-color: var(--background-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(166, 226, 46, 0.3);
+    position: relative;
+}
+
+#gameCanvas::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 12px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    z-index: -1;
+    opacity: 0.1;
+}
+
+.simulation-controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.simulation-controls button {
+    padding: 10px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #2196f3;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.simulation-controls button:hover {
+    background: #1976d2;
+}
+
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#speedSlider {
+    width: 150px;
+}
+
+.simulation-stats {
+    display: flex;
+    gap: 20px;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.score-explanation {
+    font-size: 0.9rem !important;
+    color: #666;
+    border-left: 3px solid var(--primary-color);
+    padding-left: 10px !important;
+    margin: 10px 0 !important;
+    line-height: 1.4;
+}
+
+/* Tournament Status */
+.tournament-status {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tournament-progress {
+    text-align: center;
+}
+
+.tournament-progress h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+/* Leaderboard Status Indicators */
+.qualified {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+tr.qualified {
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+tr.completed {
+    background-color: rgba(33, 150, 243, 0.1);
+}
+
+.completed {
+    color: #2196f3;
+}
+
+/* Match remaining counter */
+td:last-child {
+    font-weight: 500;
+}
+
+/* Tournament progress colors */
+.tournament-progress p {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+/* Component styles with improved contrast */
+
+/* Tables */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    background-color: var(--card-background);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.data-table th {
+    background-color: var(--input-background);
+    color: var(--primary-color);
+    font-weight: 600;
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.data-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.data-table tbody tr:hover {
+    background-color: var(--table-hover);
+}
+
+/* Forms and Inputs */
+input, select, textarea {
+    background-color: var(--input-background);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 0.75rem;
+    border-radius: 4px;
+    width: 100%;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(107, 255, 45, 0.2);
+}
+
+/* Buttons */
+.button {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.button:hover {
+    background-color: var(--hover-color);
+    box-shadow: 0 2px 8px rgba(107, 255, 45, 0.4);
+}
+
+.button:disabled {
+    background-color: var(--disabled-color);
+    cursor: not-allowed;
+}
+
+/* Cards */
+.card {
+    background-color: var(--card-background);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.card-header {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0.75rem;
+}
+
+/* Status Messages */
+.error-message {
+    color: var(--error-color);
+    background-color: rgba(255, 79, 79, 0.1);
+    border: 1px solid var(--error-color);
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.success-message {
+    color: var(--success-color);
+    background-color: rgba(76, 175, 80, 0.1);
+    border: 1px solid var(--success-color);
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+/* Links */
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+/* Page headers and section titles */
+.page h2, .section-title {
+    color: var(--highlight-yellow);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 10px rgba(255, 240, 71, 0.3);
+}
+
+/* Team name highlighting */
+.team-card.my-team .team-name {
+    color: var(--highlight-yellow);
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(255, 240, 71, 0.3);
+}
+
+/* Battle Simulations title */
+.simulations-container h2,
+.simulation-viewer h2 {
+    color: var(--highlight-yellow);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 10px rgba(255, 240, 71, 0.3);
 }

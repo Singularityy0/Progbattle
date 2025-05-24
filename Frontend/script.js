@@ -20,7 +20,7 @@ navLinks.forEach(link => {
         e.preventDefault();
         const page = link.dataset.page;
         if (page) {
-            if ((page === 'leaderboard' || page === 'team' || page === 'submit') && !currentUser) {
+            if ((page === 'leaderboard' || page === 'team' || page === 'submit' || page === 'simulations') && !currentUser) {
                 showToast('Please login first', 'error');
                 await showPage('auth');
                 return;
@@ -132,17 +132,25 @@ function updateAuthState() {
     const logoutLink = document.getElementById('logoutLink');
     const teamLink = document.getElementById('teamLink');
     const submitLink = document.getElementById('submitLink');
+    const simulationsLink = document.querySelector('[data-page="simulations"]');
 
     if (currentUser) {
         authLink.style.display = 'none';
         logoutLink.style.display = 'inline-block';
         teamLink.style.display = 'inline-block';
         submitLink.style.display = currentTeam ? 'inline-block' : 'none';
+        simulationsLink.style.display = 'inline-block';
     } else {
         authLink.style.display = 'inline-block';
         logoutLink.style.display = 'none';
         teamLink.style.display = 'none';
         submitLink.style.display = 'none';
+        simulationsLink.style.display = 'none';
+        
+        // If on simulations page when logging out, redirect to home
+        if (document.getElementById('simulationsPage').classList.contains('active')) {
+            showPage('home');
+        }
     }
 }
 
@@ -231,10 +239,6 @@ async function submitBot() {
         showToast('Please join a team first', 'error');
         return;
     }
-    if (submissionLimits.hourly.remaining <= 0) {
-        showToast('Hourly submission limit reached. Please wait for the next hour to submit again.', 'error');
-        return;
-    }
 
     const fileInput = document.getElementById('botFile');
     if (!fileInput.files.length) {
@@ -243,7 +247,7 @@ async function submitBot() {
     }
 
     const formData = new FormData();
-    formData.append('file', fileInput.files[0]);
+    formData.append('bot_file', fileInput.files[0]);  // Changed from 'file' to 'bot_file'
     formData.append('team_id', currentTeam.id);
 
     try {
@@ -256,49 +260,39 @@ async function submitBot() {
 
         const data = await response.json();
         if (response.ok) {
-            const result = data.match_result;
-            const wonMessage = result.won ? '🏆 Your bot won!' : '😔 System bot won';
-            showToast(`Match completed - ${wonMessage}`);
+            showToast('Bot submitted successfully!');
+            fileInput.value = ''; // Clear the file input
             
-            // Add match results to history
-            const submissionsList = document.getElementById('submissionsList');
-            const submissionDiv = document.createElement('div');
-            submissionDiv.className = 'submission-card';
-            submissionDiv.innerHTML = `
-                <div class="submission-header">
-                    <h4>${wonMessage}</h4>
-                    <div class="score-details">
-                        <p>Match Points:</p>
-                        <p>Your Bot: ${result.your_score} points</p>
-                        <p>System Bot: ${result.system_score} points</p>
-                        <p class="final-score">Final Score: ${result.final_score} points</p>
-                        <p class="score-explanation">${result.won ? 
-                            `Winner bonus! Final Score = (${result.your_score} + ${result.system_score})/2 = ${result.final_score}` :
-                            `Loss penalty. Final Score = (${result.your_score} - ${result.system_score})/2 = ${result.final_score}`
-                        }</p>
+            // Update UI with match results
+            document.getElementById('submissionsList').innerHTML = `
+                <div class="submission-card">
+                    <div class="submission-header">
+                        <h4>Match Results</h4>
+                        <div class="score-details">
+                            <p>Your Score: ${data.your_score}</p>
+                            <p>System Score: ${data.system_score}</p>
+                            <p>Final Score: ${data.final_score}</p>
+                            <p>Matches Remaining: ${data.matches_remaining}</p>
+                        </div>
                     </div>
-                    <p class="match-date">Date: ${new Date().toLocaleString()}</p>
-                </div>                <div class="match-actions">
-                    
-                    <a href="http://localhost:5000/bot/logs/${result.log_file}" 
-                       class="download-btn" target="_blank">
-                       <i class="fas fa-download"></i> Download Match Log
-                    </a>
+                    <div class="match-actions">
+                        <a href="http://localhost:5000/bot/logs/${data.log_file}" 
+                           class="download-btn" target="_blank">
+                           <i class="fas fa-download"></i> View Match Log
+                        </a>
+                    </div>
                 </div>
-                
             `;
-            submissionsList.insertBefore(submissionDiv, submissionsList.firstChild);
             
-            // Clear the file input            fileInput.value = '';
-            
-            // Refresh submission history and leaderboard
+            // Refresh history and leaderboard
             await loadSubmissionHistory();
             await loadLeaderboard(currentTeam.round || 1);
         } else {
             showToast(data.error, 'error');
         }
     } catch (error) {
-        showToast('An error occurred', 'error');
+        console.error('Error submitting bot:', error);
+        showToast('An error occurred while submitting your bot', 'error');
     } finally {
         loadingOverlay.style.display = 'none';
     }
@@ -424,25 +418,23 @@ async function loadSubmissionHistory() {
                 <div class="submission-header">
                     <h4>Match Results</h4>
                     <div class="score-details">
-                        <p>Your Bot's Score: ${sub.score}</p>
+                        <p>Final Score: ${sub.score}</p>
                         <p>Date: ${dateStr}</p>
                         <p>Round: ${sub.round}</p>
                     </div>
-                </div>                <div class="match-actions">
-                    
-                    <a href="http://localhost:5000/bot/logs/${sub.logs[0]}" 
-                       class="download-btn" target="_blank">
-                       <i class="fas fa-download"></i> View Match Log
-                    </a>
                 </div>
-                
-            `;
-            submissionsList.appendChild(submissionDiv);
+                ${sub.logs.length > 0 ? `
+                    <div class="match-actions">
+                        <a href="http://localhost:5000/bot/logs/${sub.logs[0]}" 
+                           class="download-btn" target="_blank">
+                           <i class="fas fa-download"></i> View Match Log
+                        </a>
+                    </div>
+                ` : ''}
+            `;            submissionsList.appendChild(submissionDiv);
         });
-        
-        // Update submission limits based on history
-        updateSubmissionLimits(submissions);
     } catch (error) {
+        console.error('Error loading submission history:', error);
         showToast('Error loading submission history', 'error');
     }
 }
@@ -452,87 +444,53 @@ async function loadLeaderboard(round) {
     try {
         const response = await fetch(`http://localhost:5000/leaderboard/round/${round}`);
         const leaderboard = await response.json();
+        
+        // Update tournament status
+        const statusDiv = document.querySelector('.tournament-status');
+        if (round === 1) {
+            const completedTeams = leaderboard.filter(t => t.matches_played >= 10).length;
+            statusDiv.innerHTML = `
+                <div class="tournament-progress">
+                    <h3>Round 1 Progress</h3>
+                    <p>${completedTeams}/24 teams completed their matches</p>
+                    <p>${completedTeams >= 24 ? 'Round 1 complete! Top 16 teams have qualified for Round 2.' : 
+                       `${24 - completedTeams} more teams needed to complete Round 1`}</p>
+                </div>
+            `;
+        } else {
+            statusDiv.innerHTML = '<h3>Round 2 - Top 16 Teams Compete!</h3>';
+        }
+        
+        // Update leaderboard table
         const tbody = document.querySelector('#leaderboardTable tbody');
-        tbody.innerHTML = leaderboard.map((entry, index) => `
-            <tr>
-                <td>${index + 1}</td>
-                <td>${entry.team_name}</td>
-                <td>${entry.total_score}</td>
-                <td>${entry.matches_played}</td>
-            </tr>
-        `).join('');
+        tbody.innerHTML = leaderboard.map((entry, index) => {
+            let status = '';
+            if (round === 1) {
+                if (entry.matches_played >= 10) {
+                    status = entry.is_qualified ? 
+                        '<span class="qualified">Qualified for Round 2! 🏆</span>' : 
+                        '<span class="completed">All matches completed</span>';
+                } else {
+                    status = `${10 - entry.matches_played} matches remaining`;
+                }
+            }
+            
+            return `
+                <tr class="${entry.is_qualified ? 'qualified' : ''} ${entry.matches_played >= 10 ? 'completed' : ''}">
+                    <td>${index + 1}</td>
+                    <td>${entry.team_name}</td>
+                    <td>${entry.total_score.toFixed(1)}</td>
+                    <td>${entry.matches_played}/10</td>
+                    <td>${status}</td>
+                </tr>
+            `;
+        }).join('');
     } catch (error) {
         showToast('Error loading leaderboard', 'error');
     }
 }
 
-// Track submission limits
-let submissionLimits = {
-    hourly: {
-        max: 4,
-        remaining: 4,
-        resetTime: null
-    },
-    daily: {
-        max: 10,
-        remaining: 10,
-        resetTime: null
-    }
-};
-
-function updateSubmissionLimits(submissions) {
-    const now = new Date();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const hourStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours());
-    
-    // Count submissions in the last hour and today
-    const hourlyCount = submissions.filter(sub => new Date(sub.timestamp) >= hourStart).length;
-    const dailyCount = submissions.filter(sub => new Date(sub.timestamp) >= todayStart).length;
-    
-    // Update remaining counts
-    submissionLimits.hourly.remaining = Math.max(0, submissionLimits.hourly.max - hourlyCount);
-    submissionLimits.daily.remaining = Math.max(0, submissionLimits.daily.max - dailyCount);
-    
-    // Calculate next reset times
-    const hourlyReset = new Date(hourStart);
-    hourlyReset.setHours(hourlyReset.getHours() + 1);
-    submissionLimits.hourly.resetTime = hourlyReset;
-    
-    const dailyReset = new Date(todayStart);
-    dailyReset.setDate(dailyReset.getDate() + 1);
-    submissionLimits.daily.resetTime = dailyReset;
-    
-    // Update UI
-    updateSubmissionLimitsUI();
-}
-
-function updateSubmissionLimitsUI() {
-    document.getElementById('hourlySubmissionsLeft').textContent = submissionLimits.hourly.remaining;
-    document.getElementById('dailySubmissionsLeft').textContent = submissionLimits.daily.remaining;
-    if (submissionLimits.hourly.resetTime) {
-        document.getElementById('hourlyResetTime').textContent = submissionLimits.hourly.resetTime.toLocaleTimeString();
-    }
-    if (submissionLimits.daily.resetTime) {
-        document.getElementById('dailyResetTime').textContent = submissionLimits.daily.resetTime.toLocaleTimeString();
-    }
-    // Disable submit button if hourly limit reached
-    const submitBtn = document.querySelector('#submitPage .submission-form button');
-    const hourlyNote = document.getElementById('hourlyLimitNote');
-    if (submissionLimits.hourly.remaining <= 0) {
-        submitBtn.disabled = true;
-        hourlyNote.style.display = 'block';
-    } else {
-        submitBtn.disabled = false;
-        hourlyNote.style.display = 'none';
-    }
-}
-
-// Start timer to update reset times
-setInterval(() => {
-    if (document.getElementById('submitPage').classList.contains('active')) {
-        updateSubmissionLimitsUI();
-    }
-}, 1000);
+// No submission limits
 
 // Initial setup
 document.getElementById('logoutLink').addEventListener('click', (e) => {
@@ -542,4 +500,194 @@ document.getElementById('logoutLink').addEventListener('click', (e) => {
 
 // Load initial data
 loadLeaderboard(1);
+
+// Game Simulation Class
+class GameSimulation {
+    constructor() {
+        this.canvas = document.getElementById('gameCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.GRID_SIZE = 30;
+        this.CELL_SIZE = this.canvas.width / this.GRID_SIZE;
+        this.PADDLE_WIDTH = 2;
+        
+        this.gameData = [];
+        this.currentStep = 0;
+        this.isPlaying = false;
+        this.animationFrame = null;
+        this.lastFrameTime = 0;
+        this.speed = 50; // Default speed (50%)
+        
+        this.setupControls();
+    }
+
+    setupControls() {
+        this.playPauseBtn = document.getElementById('playPauseBtn');
+        this.resetBtn = document.getElementById('resetBtn');
+        this.speedSlider = document.getElementById('speedSlider');
+        this.speedValue = document.getElementById('speedValue');
+
+        this.playPauseBtn.addEventListener('click', () => {
+            this.isPlaying = !this.isPlaying;
+            this.playPauseBtn.innerHTML = this.isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+            if (this.isPlaying) this.animate();
+        });
+
+        this.resetBtn.addEventListener('click', () => {
+            this.currentStep = 0;
+            this.updateStats();
+            this.render();
+        });
+
+        this.speedSlider.addEventListener('input', (e) => {
+            this.speed = parseInt(e.target.value);
+            this.speedValue.textContent = `${this.speed}%`;
+        });
+    }
+
+    loadData(csvData) {
+        this.gameData = csvData
+            .split('\n')
+            .slice(1) // Skip header row
+            .filter(line => line.trim())
+            .map(line => {
+                const [step, ball_x, ball_y, paddle1_x, paddle2_x, bot1_action, bot2_action, score_bot1, score_bot2] = line.split(',');
+                return {
+                    step: parseInt(step),
+                    ball: { x: parseFloat(ball_x), y: parseFloat(ball_y) },
+                    paddle1: { x: parseFloat(paddle1_x) },
+                    paddle2: { x: parseFloat(paddle2_x) },
+                    score: { bot1: parseInt(score_bot1), bot2: parseInt(score_bot2) }
+                };
+            });
+        
+        this.currentStep = 0;
+        this.updateStats();
+        this.render();
+    }    updateStats() {
+        const frame = this.gameData[this.currentStep];
+        if (frame) {
+            document.getElementById('currentStep').textContent = frame.step;
+            const rawScore = `${frame.score.bot1} - ${frame.score.bot2}`;            let finalScore = frame.score.bot1; // Base score
+            const isWin = frame.score.bot1 > frame.score.bot2;
+            const isClose = Math.abs(frame.score.bot1 - frame.score.bot2) <= 1;
+            
+            // Apply modifiers
+            if (isWin) {
+                finalScore += 3;
+            } else {
+                finalScore = Math.max(0, finalScore - 1);
+            }
+            if (isClose) finalScore += 1;
+
+            document.getElementById('score').textContent = 
+                `${rawScore} (Final: ${finalScore.toFixed(1)}) ${isClose ? '🎯' : ''} ${isWin ? '🏆' : ''}`;
+        }
+    }
+
+    animate() {
+        if (!this.isPlaying || this.currentStep >= this.gameData.length - 1) {
+            this.isPlaying = false;
+            this.playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            return;
+        }
+
+        const currentTime = performance.now();
+        const deltaTime = currentTime - this.lastFrameTime;
+        const frameDelay = 1000 / (60 * (this.speed / 50)); // Adjust speed based on slider
+
+        if (deltaTime > frameDelay) {
+            this.currentStep++;
+            this.updateStats();
+            this.render();
+            this.lastFrameTime = currentTime;
+        }
+
+        requestAnimationFrame(() => this.animate());
+    }
+
+    render() {
+        const frame = this.gameData[this.currentStep];
+        if (!frame) return;
+
+        // Clear canvas
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Draw ball
+        this.ctx.fillStyle = '#fff';
+        this.ctx.beginPath();
+        this.ctx.arc(
+            frame.ball.x * this.CELL_SIZE + this.CELL_SIZE/2,
+            frame.ball.y * this.CELL_SIZE + this.CELL_SIZE/2,
+            this.CELL_SIZE/2,
+            0,
+            Math.PI * 2
+        );
+        this.ctx.fill();        // Draw paddles and labels
+        // Player's paddle (bottom)
+        this.ctx.fillStyle = '#2196f3';
+        this.ctx.fillRect(
+            frame.paddle1.x * this.CELL_SIZE,
+            (this.GRID_SIZE - 1) * this.CELL_SIZE,
+            this.PADDLE_WIDTH * this.CELL_SIZE,
+            this.CELL_SIZE
+        );
+        // Player label
+        this.ctx.fillStyle = '#fff';
+        this.ctx.font = '12px Arial';
+        this.ctx.textAlign = 'left';
+        this.ctx.fillText('Your Bot', 10, this.canvas.height - 10);
+
+        // System bot's paddle (top)
+        this.ctx.fillStyle = '#f44336';
+        this.ctx.fillRect(
+            frame.paddle2.x * this.CELL_SIZE,
+            0,
+            this.PADDLE_WIDTH * this.CELL_SIZE,
+            this.CELL_SIZE
+        );
+        // System bot label
+        this.ctx.fillStyle = '#fff';
+        this.ctx.fillText('System Bot', 10, 20);
+
+        // Draw grid (optional)
+        this.ctx.strokeStyle = '#333';
+        this.ctx.lineWidth = 0.5;
+        for (let i = 0; i <= this.GRID_SIZE; i++) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(i * this.CELL_SIZE, 0);
+            this.ctx.lineTo(i * this.CELL_SIZE, this.canvas.height);
+            this.ctx.stroke();
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, i * this.CELL_SIZE);
+            this.ctx.lineTo(this.canvas.width, i * this.CELL_SIZE);
+            this.ctx.stroke();
+        }
+    }
+}
+
+// Initialize simulation when DOM is loaded
+let gameSimulation;
+document.addEventListener('DOMContentLoaded', () => {
+    gameSimulation = new GameSimulation();
+});
+
+// Function to load simulation from file
+async function loadSimulation() {
+    const fileInput = document.getElementById('logFile');
+    const file = fileInput.files[0];
+    if (!file) {
+        showToast('Please select a log file', 'error');
+        return;
+    }
+
+    try {
+        const text = await file.text();
+        gameSimulation.loadData(text);
+        showToast('Simulation loaded successfully', 'success');
+    } catch (error) {
+        console.error('Error loading simulation:', error);
+        showToast('Error loading simulation file', 'error');
+    }
+}
 

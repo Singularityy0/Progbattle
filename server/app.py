@@ -1,5 +1,6 @@
 from flask import Flask, send_from_directory, send_file
 from flask_cors import CORS
+from flask_migrate import Migrate
 from models.database import db
 import os
 
@@ -25,6 +26,7 @@ def create_app():
 
     CORS(app)
     db.init_app(app)
+    migrate = Migrate(app, db)
 
     # Blueprints
     from routes.auth import auth_bp
