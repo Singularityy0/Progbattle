@@ -3,10 +3,10 @@ from flask_cors import CORS
 from models.database import db
 import os
 
-
 def create_app():
     app = Flask(__name__)
-
+    
+    # Get absolute paths
     server_dir = os.path.abspath(os.path.dirname(__file__))
     project_dir = os.path.dirname(server_dir)
     db_path = os.path.join(server_dir, "progbattle_new.db")
@@ -69,17 +69,22 @@ def create_app():
 
     return app
 
-
 app = create_app()
 
+# Ensure DB tables are created
 with app.app_context():
     db.create_all()
 
+# Route to serve log CSVs
 @app.route('/static/<path:filename>')
 def static_logs(filename):
     logs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'logs'))
-    return send_from_directory(logs_path, filename)
-
+    try:
+        response = send_from_directory(logs_path, filename)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+    except Exception as e:
+        return {"error": f"Error serving log file: {str(e)}"}, 404
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,4 +1,3 @@
-
 let currentUser = null;
 let currentTeam = null;
 
@@ -232,6 +231,10 @@ async function submitBot() {
         showToast('Please join a team first', 'error');
         return;
     }
+    if (submissionLimits.hourly.remaining <= 0) {
+        showToast('Hourly submission limit reached. Please wait for the next hour to submit again.', 'error');
+        return;
+    }
 
     const fileInput = document.getElementById('botFile');
     if (!fileInput.files.length) {
@@ -276,27 +279,13 @@ async function submitBot() {
                     </div>
                     <p class="match-date">Date: ${new Date().toLocaleString()}</p>
                 </div>                <div class="match-actions">
-                    <button onclick="viewSimulation('${result.log_file}')" class="view-btn">
-                        <i class="fas fa-play"></i> View Simulation
-                    </button>
+                    
                     <a href="http://localhost:5000/bot/logs/${result.log_file}" 
                        class="download-btn" target="_blank">
                        <i class="fas fa-download"></i> Download Match Log
                     </a>
                 </div>
-                <div class="simulation-container" id="simulation-${result.log_file}" style="display: none;">
-                    <canvas width="600" height="600"></canvas>
-                    <div class="simulation-controls">
-                        <button class="control-btn" onclick="pauseSimulation('${result.log_file}')">
-                            <i class="fas fa-pause"></i>
-                        </button>
-                        <button class="control-btn" onclick="restartSimulation('${result.log_file}')">
-                            <i class="fas fa-redo"></i>
-                        </button>
-                        <input type="range" min="1" max="10" value="5" 
-                               onchange="updateSpeed('${result.log_file}', this.value)">
-                    </div>
-                </div>
+                
             `;
             submissionsList.insertBefore(submissionDiv, submissionsList.firstChild);
             
@@ -440,30 +429,19 @@ async function loadSubmissionHistory() {
                         <p>Round: ${sub.round}</p>
                     </div>
                 </div>                <div class="match-actions">
-                    <button onclick="viewSimulation('${sub.logs[0]}')" class="view-btn">
-                        <i class="fas fa-play"></i> View Simulation
-                    </button>
+                    
                     <a href="http://localhost:5000/bot/logs/${sub.logs[0]}" 
                        class="download-btn" target="_blank">
                        <i class="fas fa-download"></i> View Match Log
                     </a>
                 </div>
-                <div class="simulation-container" id="simulation-${sub.logs[0]}" style="display: none;">
-                    <canvas width="600" height="600"></canvas>
-                    <div class="simulation-controls">
-                        <button class="control-btn" onclick="pauseSimulation('${sub.logs[0]}')">
-                            <i class="fas fa-pause"></i>
-                        </button>
-                        <button class="control-btn" onclick="restartSimulation('${sub.logs[0]}')">
-                            <i class="fas fa-redo"></i>
-                        </button>
-                        <input type="range" min="1" max="10" value="5" 
-                               onchange="updateSpeed('${sub.logs[0]}', this.value)">
-                    </div>
-                </div>
+                
             `;
             submissionsList.appendChild(submissionDiv);
         });
+        
+        // Update submission limits based on history
+        updateSubmissionLimits(submissions);
     } catch (error) {
         showToast('Error loading submission history', 'error');
     }
@@ -488,6 +466,74 @@ async function loadLeaderboard(round) {
     }
 }
 
+// Track submission limits
+let submissionLimits = {
+    hourly: {
+        max: 4,
+        remaining: 4,
+        resetTime: null
+    },
+    daily: {
+        max: 10,
+        remaining: 10,
+        resetTime: null
+    }
+};
+
+function updateSubmissionLimits(submissions) {
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const hourStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours());
+    
+    // Count submissions in the last hour and today
+    const hourlyCount = submissions.filter(sub => new Date(sub.timestamp) >= hourStart).length;
+    const dailyCount = submissions.filter(sub => new Date(sub.timestamp) >= todayStart).length;
+    
+    // Update remaining counts
+    submissionLimits.hourly.remaining = Math.max(0, submissionLimits.hourly.max - hourlyCount);
+    submissionLimits.daily.remaining = Math.max(0, submissionLimits.daily.max - dailyCount);
+    
+    // Calculate next reset times
+    const hourlyReset = new Date(hourStart);
+    hourlyReset.setHours(hourlyReset.getHours() + 1);
+    submissionLimits.hourly.resetTime = hourlyReset;
+    
+    const dailyReset = new Date(todayStart);
+    dailyReset.setDate(dailyReset.getDate() + 1);
+    submissionLimits.daily.resetTime = dailyReset;
+    
+    // Update UI
+    updateSubmissionLimitsUI();
+}
+
+function updateSubmissionLimitsUI() {
+    document.getElementById('hourlySubmissionsLeft').textContent = submissionLimits.hourly.remaining;
+    document.getElementById('dailySubmissionsLeft').textContent = submissionLimits.daily.remaining;
+    if (submissionLimits.hourly.resetTime) {
+        document.getElementById('hourlyResetTime').textContent = submissionLimits.hourly.resetTime.toLocaleTimeString();
+    }
+    if (submissionLimits.daily.resetTime) {
+        document.getElementById('dailyResetTime').textContent = submissionLimits.daily.resetTime.toLocaleTimeString();
+    }
+    // Disable submit button if hourly limit reached
+    const submitBtn = document.querySelector('#submitPage .submission-form button');
+    const hourlyNote = document.getElementById('hourlyLimitNote');
+    if (submissionLimits.hourly.remaining <= 0) {
+        submitBtn.disabled = true;
+        hourlyNote.style.display = 'block';
+    } else {
+        submitBtn.disabled = false;
+        hourlyNote.style.display = 'none';
+    }
+}
+
+// Start timer to update reset times
+setInterval(() => {
+    if (document.getElementById('submitPage').classList.contains('active')) {
+        updateSubmissionLimitsUI();
+    }
+}, 1000);
+
 // Initial setup
 document.getElementById('logoutLink').addEventListener('click', (e) => {
     e.preventDefault();
@@ -497,199 +543,3 @@ document.getElementById('logoutLink').addEventListener('click', (e) => {
 // Load initial data
 loadLeaderboard(1);
 
-// Game simulation
-const GRID_SIZE = 30;
-const PADDLE_WIDTH = 2;
-const simulations = new Map();
-
-class GameSimulation {
-    constructor(logFile) {
-        this.logFile = logFile;
-        this.gameStates = [];
-        this.currentStep = 0;
-        this.isPlaying = false;
-        this.speed = 5;
-        this.canvas = document.querySelector(`#simulation-${logFile} canvas`);
-        this.ctx = this.canvas.getContext('2d');
-        this.cellSize = this.canvas.width / GRID_SIZE;
-    }
-
-    async loadGameStates() {
-        try {
-            const response = await fetch(`http://localhost:5000/bot/logs/${this.logFile}`);
-            const text = await response.text();
-            
-            // Parse CSV
-            const lines = text.split('\n');
-            const headers = lines[0].split(',');
-            
-            for (let i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
-                const values = lines[i].split(',');
-                this.gameStates.push({
-                    step: parseInt(values[0]),
-                    ball: { x: parseInt(values[1]), y: parseInt(values[2]) },
-                    paddle1: { x: parseInt(values[3]) },
-                    paddle2: { x: parseInt(values[4]) },
-                    score: {
-                        bot1: parseInt(values[7]),
-                        bot2: parseInt(values[8])
-                    }
-                });
-            }
-        } catch (error) {
-            showToast('Error loading game log', 'error');
-        }
-    }
-
-    draw() {
-        if (!this.gameStates.length || this.currentStep >= this.gameStates.length) return;
-        
-        const state = this.gameStates[this.currentStep];
-        const ctx = this.ctx;
-        const cellSize = this.cellSize;
-
-        // Clear canvas
-        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // Draw grid
-        ctx.strokeStyle = '#e7bfbf';
-        ctx.lineWidth = 1;
-        for (let i = 0; i <= GRID_SIZE; i++) {
-            ctx.beginPath();
-            ctx.moveTo(i * cellSize, 0);
-            ctx.lineTo(i * cellSize, this.canvas.height);
-            ctx.moveTo(0, i * cellSize);
-            ctx.lineTo(this.canvas.width, i * cellSize);
-            ctx.stroke();
-        }
-
-        // Draw paddles
-        ctx.fillStyle = '#ffe652';
-        // Bottom paddle (paddle1)
-        ctx.fillRect(
-            state.paddle1.x * cellSize,
-            (GRID_SIZE - 1) * cellSize,
-            PADDLE_WIDTH * cellSize,
-            cellSize
-        );
-        // Top paddle (paddle2)
-        ctx.fillRect(
-            state.paddle2.x * cellSize,
-            0,
-            PADDLE_WIDTH * cellSize,
-            cellSize
-        );
-
-        // Draw ball
-        ctx.fillStyle = '#7cff00';
-        ctx.beginPath();
-        ctx.arc(
-            (state.ball.x + 0.5) * cellSize,
-            (state.ball.y + 0.5) * cellSize,
-            cellSize / 2,
-            0,
-            Math.PI * 2
-        );
-        ctx.fill();
-
-        // Draw score
-        ctx.fillStyle = '#ff0303';
-        ctx.font = '20px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(`${state.score.bot1} - ${state.score.bot2}`, this.canvas.width / 2, this.canvas.height / 2);
-    }
-
-    start() {
-        if (!this.isPlaying) {
-            this.isPlaying = true;
-            this.animate();
-        }
-    }
-
-    animate() {
-        if (!this.isPlaying) return;
-        
-        this.draw();
-        this.currentStep++;
-        
-        if (this.currentStep >= this.gameStates.length) {
-            this.currentStep = 0;
-        }
-        
-        setTimeout(() => {
-            requestAnimationFrame(() => this.animate());
-        }, 1000 / (this.speed * 2)); // Adjust speed
-    }
-
-    pause() {
-        this.isPlaying = false;
-    }
-
-    restart() {
-        this.currentStep = 0;
-        this.draw();
-    }
-
-    setSpeed(speed) {
-        this.speed = speed;
-    }
-}
-
-async function viewSimulation(logFile) {
-    const container = document.getElementById(`simulation-${logFile}`);
-    const allContainers = document.querySelectorAll('.simulation-container');
-    
-    // Hide all other simulations
-    allContainers.forEach(c => {
-        if (c !== container) {
-            c.style.display = 'none';
-            const sim = simulations.get(c.id.replace('simulation-', ''));
-            if (sim) sim.pause();
-        }
-    });
-    
-    // Toggle current simulation
-    if (container.style.display === 'none') {
-        container.style.display = 'block';
-        let simulation = simulations.get(logFile);
-        
-        if (!simulation) {
-            simulation = new GameSimulation(logFile);
-            await simulation.loadGameStates();
-            simulations.set(logFile, simulation);
-        }
-        
-        simulation.start();
-    } else {
-        container.style.display = 'none';
-        const simulation = simulations.get(logFile);
-        if (simulation) simulation.pause();
-    }
-}
-
-function pauseSimulation(logFile) {
-    const simulation = simulations.get(logFile);
-    if (simulation) {
-        if (simulation.isPlaying) {
-            simulation.pause();
-        } else {
-            simulation.start();
-        }
-    }
-}
-
-function restartSimulation(logFile) {
-    const simulation = simulations.get(logFile);
-    if (simulation) {
-        simulation.restart();
-        simulation.start();
-    }
-}
-
-function updateSpeed(logFile, speed) {
-    const simulation = simulations.get(logFile);
-    if (simulation) {
-        simulation.setSpeed(parseInt(speed));
-    }
-}

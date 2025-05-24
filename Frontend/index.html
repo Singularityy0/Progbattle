@@ -11,11 +11,11 @@
     <div class="container">
         <nav class="navbar">
             <div class="logo">ProgBattle</div>
-            <div class="nav-links" id="navLinks">
-                <a href="#" class="active" data-page="home">Home</a>
+            <div class="nav-links" id="navLinks">                <a href="#" class="active" data-page="home">Home</a>
                 <a href="#" data-page="leaderboard">Leaderboard</a>
                 <a href="#" data-page="team" id="teamLink" style="display: none;">Team</a>
                 <a href="#" data-page="submit" id="submitLink" style="display: none;">Submit Bot</a>
+                <a href="#" data-page="simulations">Simulations</a>
                 <a href="#" data-page="auth" id="authLink">Login/Register</a>
                 <a href="#" id="logoutLink" style="display: none;">Logout</a>
             </div>
@@ -69,20 +69,50 @@
                         <div id="teamsList"></div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Submit Bot Page -->
+            </div>            <!-- Submit Bot Page -->
             <div class="page" id="submitPage">
                 <div class="submit-container">
                     <h2>Submit Your Bot</h2>
                     <p>Upload your Python bot file to compete against system bots!</p>
+                    <div class="submission-limits">
+                        <div class="limit-info">
+                            <p><i class="fas fa-clock"></i> Hourly Limit: <span id="hourlySubmissionsLeft">4</span>/4 submissions remaining</p>
+                            <p><i class="fas fa-calendar"></i> Daily Limit: <span id="dailySubmissionsLeft">10</span>/10 submissions remaining</p>
+                        </div>
+                        <div class="limit-reset">
+                            <p>Next hourly reset: <span id="hourlyResetTime">--:--</span></p>
+                            <p>Next daily reset: <span id="dailyResetTime">--:--</span></p>
+                        </div>
+                    </div>
                     <div class="submission-form">
+                        <div id="hourlyLimitNote" style="display:none; color: #d32f2f; font-weight: bold; margin-bottom: 10px;">
+                            Hourly submission limit reached. Please wait for the next hour to submit again.
+                        </div>
                         <input type="file" id="botFile" accept=".py">
                         <button onclick="submitBot()">Submit Bot</button>
                     </div>
                     <div class="submission-history">
                         <h3>Submission History</h3>
                         <div id="submissionsList"></div>
+                    </div>
+                </div>
+            </div><!-- Simulations Page -->
+            <div class="page" id="simulationsPage">
+                <div class="simulations-container">
+                    <h2>Game Simulations</h2>
+                    <div class="simulation-controls">
+                        <input type="file" id="logFile" accept=".csv">
+                        <button onclick="loadSimulation()" class="sim-btn">Load Simulation</button>
+                        <div class="playback-controls">
+                            <button onclick="playSimulation()" id="playBtn" disabled>Play</button>
+                            <button onclick="pauseSimulation()" id="pauseBtn" disabled>Pause</button>
+                            <button onclick="resetSimulation()" id="resetBtn" disabled>Reset</button>
+                            <input type="range" id="simulationSpeed" min="1" max="10" value="5">
+                            <label for="simulationSpeed">Speed</label>
+                        </div>
+                    </div>
+                    <div class="simulation-view">
+                        <canvas id="gameCanvas" width="600" height="600"></canvas>
                     </div>
                 </div>
             </div>
