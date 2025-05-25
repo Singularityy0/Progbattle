@@ -9,16 +9,20 @@ ProgBattle is a full-stack web application for hosting a programming tournament.
 ## Features
 
 - User registration and login
-- cannot view any other page ig not logged in 
-- round 1 (functional) and support for round-2 (non-functional) :( 
+- Cannot view any other page if not logged in 
+- Round 1 (functional) and support for round-2 (non-functional) :( 
 - Team creation, joining, and management (max 4 members per team)
-- user can also leave the team as well as long as he/she is not the one who created the team
+- User can also leave the team as long as they are not the one who created the team
 - Bot script upload and evaluation against system bots
 - Real-time use of game engine (`engine.py`) for bot-vs-bot matches
 - Scoring system: Win = 5 pts, Draw = 2 pts, Loss = 0 pts, +1 bonus for every 3 goals scored
-- Leaderboard with round progression (top 16 teams advance to Round 2)
-- Frontend simulation of matches using log files (HTML Canvas)
-
+- Enhanced leaderboard with:
+  - Visual indicators for qualifying (🌟) and non-qualifying (⚠️) positions
+  - Clear status indicators for team progress
+  - Tournament progression tracking
+- Automation scripts for quick setup and testing:
+  - `auto_setup.py`: Automatically create teams and users
+  - `auto_submit_bots.py`: Automatically submit bots for all teams
 
 ## Project Structure
 
@@ -32,10 +36,16 @@ ProgBattle is a full-stack web application for hosting a programming tournament.
 │   └── progbattle_new.db  # SQLite database
 ├── Frontend/              # HTML/CSS/JS frontend (single-page app)
 ├── engine.py              # Game engine for bot battles
-├── bot1.py                # system bot
-├── logs/                  # Game logs (CSV)
-├── req.txt                # Python backend dependencies
-└── README.md              # Project documentation
+├── bot1.py               # System bot 1
+├── bot2.py               # System bot 2
+├── bot3.py               # System bot 3
+├── bot4.py               # System bot 4
+├── auto_setup.py         # Script to automatically create teams
+├── auto_submit_bots.py   # Script to automatically submit bots
+├── auto_qualify_teams.py # Script to handle Round 2 qualification
+├── logs/                 # Game logs (CSV)
+├── req.txt               # Python backend dependencies
+└── README.md             # Project documentation
 ```
 
 ## Setup Instructions
@@ -63,7 +73,38 @@ python engine.py --p1 bot1.py --p2 bot1.py
 
 - Produces `game_log.csv` for simulation.
 
-### 4. Example: Submit a Bot via API
+### 4. Automated Setup (Optional)
+
+To quickly set up multiple teams for testing:
+
+```bash
+# Create 20 teams automatically
+python auto_setup.py
+
+# Submit bots for all teams
+python auto_submit_bots.py
+
+# Monitor and trigger Round 2 qualification
+python auto_qualify_teams.py
+```
+
+The auto setup script will:
+- Create 20 teams with random names
+- Generate usernames and passwords (password: "test123")
+- Save credentials to `teams_credentials.txt`
+
+The auto submit script will:
+- Read teams from `teams_credentials.txt`
+- Submit random bots until each team has 5 submissions
+- Show submission results and scores
+
+The auto qualify script will:
+- Monitor team submission completion status
+- Automatically trigger Round 2 qualification when all teams are ready
+- Display the final qualification results with rankings
+- Show which teams qualified for Round 2 (top 16)
+
+### 5. Example: Submit a Bot via API
 
 ```python
 import requests
@@ -77,12 +118,15 @@ print(res.json())
 ```
 
 ## WORKINGS
-- User first Registers then logins to the server , the username is taken as a unique identity and password is protected using python library werkzeug
+- User first Registers then logins to the server, the username is taken as a unique identity and password is protected using python library werkzeug
 - Then they are required to go to the Team section in order to either join a team or create one.
-- only after getting a team can user submit a bot , they can only submit 5 bots one by one.
-- submission result is shown instantaneously and user is allowed to download the log(csv) file.
-- he/she can then use this csv file to view simulation by clicking on the simulation tab
-- they can then view leaderboard as well
+- Only after getting a team can user submit a bot, they can only submit 5 bots one by one.
+- Submission result is shown instantaneously and user is allowed to download the log(csv) file.
+- They can then use this csv file to view simulation by clicking on the simulation tab
+- They can then view leaderboard which now shows:
+  - 🌟 for teams in qualifying positions (top 16)
+  - ⚠️ for teams in elimination zone
+  - Clear status indicators for qualification and matches remaining
 
 ## Scoring System & Rounds
 

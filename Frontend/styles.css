@@ -1,4 +1,3 @@
-
 :root {
     --primary-color: #6bff2d;
     --secondary-color: #00b9d3;
@@ -18,6 +17,7 @@
     --disabled-color: #666666;
     --table-hover: rgba(107, 255, 45, 0.1);
     --highlight-yellow: #fff047;
+    --primary-color-rgb: 107, 255, 45;
 }
 
 
@@ -424,7 +424,7 @@ table {
 }
 
 th, td {
-    padding: 1rem;
+    padding: 12px;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
 }
@@ -785,6 +785,66 @@ input[type="range"]::-webkit-slider-thumb {
     margin-bottom: 1rem;
 }
 
+/* Add styling for last update time */
+.last-update {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+/* Animation for newly completed teams */
+@keyframes highlightRow {
+    0% {
+        background-color: rgba(var(--primary-color-rgb), 0.1);
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+tr.newly-completed {
+    animation: highlightRow 2s ease-out forwards;
+}
+
+/* Auto-refresh indicator */
+.tournament-progress::after {
+    content: '🔄';
+    display: inline-block;
+    margin-left: 0.5rem;
+    animation: spin 2s linear infinite;
+    opacity: 0.7;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Add styling for emoji legend */
+.emoji-legend {
+    background-color: var(--card-background);
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+    border: 1px solid var(--border-color);
+}
+
+.emoji-legend p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+.emoji-legend .emoji {
+    font-size: 1.2em;
+    margin-right: 0.3rem;
+    vertical-align: middle;
+}
 
 .qualified {
     color: #4caf50;
@@ -956,4 +1016,49 @@ a:hover {
     font-size: 2rem;
     margin-bottom: 1.5rem;
     text-shadow: 0 0 10px rgba(255, 240, 71, 0.3);
+}
+
+/* Add styling for leaderboard position emojis */
+.leaderboard-container table td:nth-child(2) {
+    font-weight: 500;
+}
+
+.leaderboard-container table td:nth-child(2) span {
+    margin-right: 8px;
+    font-size: 1.1em;
+}
+
+/* Make emojis slightly larger */
+.leaderboard-container table td:nth-child(2) {
+    font-size: 1.1em;
+}
+
+/* Status column styling */
+td.status {
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+td.status.qualified {
+    color: var(--primary-color);
+    background-color: rgba(var(--primary-color-rgb), 0.1);
+}
+
+td.status.eliminated {
+    color: var(--accent-color);
+    background-color: rgba(244, 67, 54, 0.1);
+}
+
+td.status.pending {
+    color: var(--text-secondary);
+    font-style: italic;
+    background-color: rgba(158, 158, 158, 0.1);
+}
+
+/* Make the status column stand out more */
+#leaderboardTable td:last-child {
+    min-width: 180px;
 }

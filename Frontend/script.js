@@ -49,15 +49,52 @@ leaderboardTabs.forEach(tab => {
         leaderboardTabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         loadLeaderboard(round);
+        
+        // Restart auto-refresh with new round
+        stopLeaderboardAutoRefresh();
+        startLeaderboardAutoRefresh();
     });
 });
+
+// Add auto-refresh functionality for leaderboard
+let leaderboardRefreshInterval;
+const REFRESH_INTERVAL = 5000; // Refresh every 5 seconds
+
+async function startLeaderboardAutoRefresh() {
+    // Clear any existing interval
+    if (leaderboardRefreshInterval) {
+        clearInterval(leaderboardRefreshInterval);
+    }
+    
+    // Get the current active round
+    const activeTab = document.querySelector('.leaderboard-tab.active');
+    const currentRound = activeTab ? activeTab.dataset.round : '1';
+    
+    // Set up the refresh interval
+    leaderboardRefreshInterval = setInterval(async () => {
+        await loadLeaderboard(currentRound);
+    }, REFRESH_INTERVAL);
+}
+
+function stopLeaderboardAutoRefresh() {
+    if (leaderboardRefreshInterval) {
+        clearInterval(leaderboardRefreshInterval);
+        leaderboardRefreshInterval = null;
+    }
+}
 
 async function showPage(pageId) {
     pages.forEach(page => page.classList.remove('active'));
     document.getElementById(pageId + 'Page').classList.add('active');
 
+    // Stop any existing auto-refresh
+    stopLeaderboardAutoRefresh();
+
     if (pageId === 'submit' && currentTeam) {
         await loadSubmissionHistory();
+    } else if (pageId === 'leaderboard') {
+        // Start auto-refresh when showing leaderboard
+        await startLeaderboardAutoRefresh();
     }
 }
 
@@ -446,46 +483,82 @@ async function loadLeaderboard(round) {
         
         // Update tournament status
         const statusDiv = document.querySelector('.tournament-status');
-        if (round === 1) {
+        if (round === '1' || round === 1) {
             const completedTeams = leaderboard.filter(t => t.matches_played >= 5).length;
             statusDiv.innerHTML = `
                 <div class="tournament-progress">
                     <h3>Round 1 Progress</h3>
+                    <div class="emoji-legend">
+                        <p><span class="emoji">🌟</span> Qualifying Position (Top 16) | <span class="emoji">⚠️</span> Elimination Zone</p>
+                    </div>
                     <p>${completedTeams}/24 teams completed their matches</p>
                     <p>${completedTeams >= 24 ? 'Round 1 complete! Top 16 teams have qualified for Round 2.' : 
                        `${24 - completedTeams} more teams needed to complete Round 1`}</p>
+                    <p class="last-update">Last updated: ${new Date().toLocaleTimeString()}</p>
                 </div>
             `;
         } else {
-            statusDiv.innerHTML = '<h3>Round 2 - Top 16 Teams Compete!</h3>';
+            statusDiv.innerHTML = `
+                <div class="tournament-progress">
+                    <h3>Round 2 - Top 16 Teams Compete!</h3>
+                    <p class="last-update">Last updated: ${new Date().toLocaleTimeString()}</p>
+                </div>
+            `;
         }
         
         // Updating leaderboard table
         const tbody = document.querySelector('#leaderboardTable tbody');
         tbody.innerHTML = leaderboard.map((entry, index) => {
-            let status = '';
-            if (round === 1) {
+            // Determine status text and class based on round and conditions
+            let statusText = '';
+            let statusClass = '';
+            
+            if (round === '1' || round === 1) {
                 if (entry.matches_played >= 5) {
-                    status = entry.is_qualified ? 
-                        '<span class="qualified">Qualified for Round 2! 🏆</span>' : 
-                        '<span class="completed">All matches completed</span>';
+                    if (index < 16) {
+                        statusText = 'Qualifying 🏆';
+                        statusClass = 'qualified';
+                    } else {
+                        statusText = 'Eliminating';
+                        statusClass = 'eliminated';
+                    }
                 } else {
-                    status = `${5 - entry.matches_played} matches remaining`;
+                    const remaining = 5 - entry.matches_played;
+                    statusText = `${remaining} match${remaining > 1 ? 'es' : ''} remaining`;
+                    statusClass = 'pending';
+                }
+            } else {
+                // Round 2 status
+                if (entry.is_qualified) {
+                    statusText = 'Qualified';
+                    statusClass = 'qualified';
+                } else {
+                    statusText = 'Eliminated';
+                    statusClass = 'eliminated';
                 }
             }
             
+            // Add qualifying/danger emoji based on position
+            const positionEmoji = index < 16 ? '🌟 ' : '⚠️ ';
+            
+            // Add animation class for newly completed teams
+            const isNewlyCompleted = entry.matches_played === 5;
+            const rowClass = isNewlyCompleted ? 'newly-completed' : '';
+            
             return `
-                <tr class="${entry.is_qualified ? 'qualified' : ''} ${entry.matches_played >= 5 ? 'completed' : ''}">
+                <tr class="${rowClass}">
                     <td>${index + 1}</td>
-                    <td>${entry.team_name}</td>
+                    <td>${positionEmoji}${entry.team_name}</td>
                     <td>${entry.total_score.toFixed(1)}</td>
                     <td>${entry.matches_played}/5</td>
-                    <td>${status}</td>
+                    <td class="status ${statusClass}">${statusText}</td>
                 </tr>
             `;
         }).join('');
     } catch (error) {
         showToast('Error loading leaderboard', 'error');
+        // Stop auto-refresh on error
+        stopLeaderboardAutoRefresh();
     }
 }
 
@@ -604,11 +677,11 @@ class GameSimulation {
         const frame = this.gameData[this.currentStep];
         if (!frame) return;
 
-        // Clear canvas
+
         this.ctx.fillStyle = '#000';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Draw ball
+
         this.ctx.fillStyle = '#fff';
         this.ctx.beginPath();
         this.ctx.arc(
@@ -665,7 +738,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gameSimulation = new GameSimulation();
 });
 
-// Function to load simulation from file
+
 async function loadSimulation() {
     const fileInput = document.getElementById('logFile');
     const file = fileInput.files[0];
@@ -683,4 +756,9 @@ async function loadSimulation() {
         showToast('Error loading simulation file', 'error');
     }
 }
+
+
+window.addEventListener('beforeunload', () => {
+    stopLeaderboardAutoRefresh();
+});
 
