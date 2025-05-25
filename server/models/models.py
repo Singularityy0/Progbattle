@@ -1,7 +1,7 @@
 from .database import db
 from datetime import datetime
 
-# Association table for team members
+
 team_members = db.Table(
     "team_members",
     db.Column("user_id", db.Integer, db.ForeignKey("user.id")),

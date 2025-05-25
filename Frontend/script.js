@@ -284,7 +284,7 @@ async function submitBot() {
                 </div>
             `;
             
-            // Refresh history and leaderboard
+            //  history and leaderboard
             await loadSubmissionHistory();
             await loadLeaderboard(currentTeam.round || 1);
         } else {
@@ -321,8 +321,7 @@ async function createTeam() {
         if (response.ok) {
             showToast('Team created successfully');
             document.getElementById('teamName').value = '';
-            
-            // Set current team immediately to prevent race conditions
+
             currentTeam = {
                 id: data.team_id,
                 name: teamName,
@@ -330,7 +329,7 @@ async function createTeam() {
                 owner_id: currentUser.id
             };
             
-            // Reload teams to get the latest state
+            // Reloadingg daa teamsss
             await loadTeams();
             updateAuthState();
             // Show the team page
@@ -358,9 +357,9 @@ async function joinTeam(teamId) {
 
         const data = await response.json();        if (response.ok) {
             showToast('Successfully joined team');
-            await loadTeams(); // Always reload teams after action
+            await loadTeams();
             updateAuthState();
-            await loadSubmissionHistory(); // Load team's submission history
+            await loadSubmissionHistory(); // Loadingg teams submission history
         } else {
             showToast(data.error, 'error');
         }
@@ -384,7 +383,7 @@ async function leaveTeam(teamId) {
         const data = await response.json();
         if (response.ok) {
             showToast('Successfully left team');
-            await loadTeams(); // Always reload teams after action
+            await loadTeams();
             updateAuthState();
         } else {
             showToast(data.error, 'error');
@@ -461,7 +460,7 @@ async function loadLeaderboard(round) {
             statusDiv.innerHTML = '<h3>Round 2 - Top 16 Teams Compete!</h3>';
         }
         
-        // Update leaderboard table
+        // Updating leaderboard table
         const tbody = document.querySelector('#leaderboardTable tbody');
         tbody.innerHTML = leaderboard.map((entry, index) => {
             let status = '';
@@ -490,18 +489,16 @@ async function loadLeaderboard(round) {
     }
 }
 
-// No submission limits
 
-// Initial setup
 document.getElementById('logoutLink').addEventListener('click', (e) => {
     e.preventDefault();
     logout();
 });
 
-// Load initial data
+// Load data
 loadLeaderboard(1);
 
-// Game Simulation Class
+// Simulation Class
 class GameSimulation {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
@@ -515,7 +512,7 @@ class GameSimulation {
         this.isPlaying = false;
         this.animationFrame = null;
         this.lastFrameTime = 0;
-        this.speed = 50; // Default speed (50%)
+        this.speed = 50;
         
         this.setupControls();
     }
@@ -570,8 +567,6 @@ class GameSimulation {
             const rawScore = `${frame.score.bot1} - ${frame.score.bot2}`;            let finalScore = frame.score.bot1; // Base score
             const isWin = frame.score.bot1 > frame.score.bot2;
             const isClose = Math.abs(frame.score.bot1 - frame.score.bot2) <= 1;
-            
-            // Apply modifiers
             if (isWin) {
                 finalScore += 3;
             } else {
@@ -593,7 +588,7 @@ class GameSimulation {
 
         const currentTime = performance.now();
         const deltaTime = currentTime - this.lastFrameTime;
-        const frameDelay = 1000 / (60 * (this.speed / 50)); // Adjust speed based on slider
+        const frameDelay = 1000 / (60 * (this.speed / 50));
 
         if (deltaTime > frameDelay) {
             this.currentStep++;
@@ -623,8 +618,7 @@ class GameSimulation {
             0,
             Math.PI * 2
         );
-        this.ctx.fill();        // Draw paddles and labels
-        // Player's paddle (bottom)
+        this.ctx.fill();
         this.ctx.fillStyle = '#2196f3';
         this.ctx.fillRect(
             frame.paddle1.x * this.CELL_SIZE,
@@ -632,7 +626,7 @@ class GameSimulation {
             this.PADDLE_WIDTH * this.CELL_SIZE,
             this.CELL_SIZE
         );
-        // Player label
+
         this.ctx.fillStyle = '#fff';
         this.ctx.font = '12px Arial';
         this.ctx.textAlign = 'left';
@@ -646,11 +640,10 @@ class GameSimulation {
             this.PADDLE_WIDTH * this.CELL_SIZE,
             this.CELL_SIZE
         );
-        // System bot label
         this.ctx.fillStyle = '#fff';
         this.ctx.fillText('System Bot', 10, 20);
 
-        // Draw grid (optional)
+
         this.ctx.strokeStyle = '#333';
         this.ctx.lineWidth = 0.5;
         for (let i = 0; i <= this.GRID_SIZE; i++) {
@@ -666,7 +659,7 @@ class GameSimulation {
     }
 }
 
-// Initialize simulation when DOM is loaded
+
 let gameSimulation;
 document.addEventListener('DOMContentLoaded', () => {
     gameSimulation = new GameSimulation();

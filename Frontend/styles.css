@@ -1,26 +1,26 @@
-/* Rick and Morty Theme Variables */
+
 :root {
-    --primary-color: #6bff2d;    /* Brighter portal green */
-    --secondary-color: #00b9d3;  /* Brighter Rick's hair blue */
-    --accent-color: #19e6f1;     /* Brighter cyan */
-    --background-color: #121212; /* Darker background */
-    --card-background: #1e1e1e;  /* Slightly lighter dark */
-    --text-color: #e6e6e6;       /* Slightly off-white for less eye strain */
-    --text-secondary: #c7c7c7;   /* Lighter secondary text for better contrast */
-    --border-color: #2a2a2a;     /* Subtle borders */
-    --highlight-color: #fff047;  /* Brighter yellow accent */
-    --hover-color: #4cd40c;      /* Darker portal green */
-    --shadow: 0 4px 12px rgba(107, 255, 45, 0.35);  /* Enhanced glow effect */
-    --input-background: #252525; /* Slightly lighter than card background */
-    --error-color: #ff4f4f;     /* Bright red for errors */
-    --success-color: #4caf50;   /* Success green */
-    --link-color: #00b9d3;      /* Bright blue for links */
-    --disabled-color: #666666;  /* Muted gray for disabled elements */
-    --table-hover: rgba(107, 255, 45, 0.1); /* Subtle green hover effect */
-    --highlight-yellow: #fff047;  /* Bright yellow for important text */
+    --primary-color: #6bff2d;
+    --secondary-color: #00b9d3;
+    --accent-color: #19e6f1;
+    --background-color: #121212;
+    --card-background: #1e1e1e;
+    --text-color: #e6e6e6;
+    --text-secondary: #c7c7c7;
+    --border-color: #2a2a2a;
+    --highlight-color: #fff047;
+    --hover-color: #4cd40c;
+    --shadow: 0 4px 12px rgba(107, 255, 45, 0.35);
+    --input-background: #252525;
+    --error-color: #ff4f4f;
+    --success-color: #4caf50;
+    --link-color: #00b9d3;
+    --disabled-color: #666666;
+    --table-hover: rgba(107, 255, 45, 0.1);
+    --highlight-yellow: #fff047;
 }
 
-/* Reset and base styles */
+
 * {
     margin: 0;
     padding: 0;
@@ -32,7 +32,7 @@ body {
     line-height: 1.6;
     background-color: var(--background-color);
     color: var(--text-color);
-    font-weight: 400;  /* Slightly bolder base font */
+    font-weight: 400;
 }
 
 .container {
@@ -41,7 +41,6 @@ body {
     padding: 0 20px;
 }
 
-/* Navbar styles */
 .navbar {
     background-color: var(--card-background);
     padding: 1rem;
@@ -73,7 +72,7 @@ body {
     background-color: rgba(108, 99, 255, 0.1);
 }
 
-/* Page styles */
+
 .page {
     display: none;
     padding: 2rem;
@@ -87,7 +86,7 @@ body {
     display: block;
 }
 
-/* Hero section */
+
 .hero {
     text-align: center;
     padding: 4rem 2rem;
@@ -171,7 +170,7 @@ body {
     background-color: var(--hover-color);
 }
 
-/* Team styles */
+
 .team-card {
     padding: 1.5rem;
     background: var(--card-background);
@@ -273,7 +272,7 @@ button:disabled:hover {
     box-shadow: var(--shadow);
 }
 
-/* Submit styles */
+
 .submit-container {
     max-width: 800px;
     margin: 0 auto;
@@ -286,7 +285,7 @@ button:disabled:hover {
     border-radius: 8px;
 }
 
-/* Submission styles */
+/* soubmission styles */
 .submission-card {
     background: var(--card-background);
     border-radius: 8px;
@@ -341,7 +340,7 @@ button:disabled:hover {
     align-items: center;
 }
 
-/* Match result styles */
+
 .score-details {
     background-color: var(--background-color);
     padding: 1.5rem;
@@ -386,7 +385,7 @@ button:disabled:hover {
     font-style: italic;
 }
 
-/* Leaderboard styles */
+/* Leaderboard  */
 .leaderboard-container {
     max-width: 800px;
     margin: 0 auto;
@@ -442,7 +441,7 @@ tr:hover {
     background-color: var(--table-hover);
 }
 
-/* Toast notification */
+
 .toast {
     position: fixed;
     bottom: 2rem;
@@ -472,12 +471,12 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Utility classes */
+
 .mb-2 {
     margin-bottom: 2rem;
 }
 
-/* Loading overlay */
+
 .loading-overlay {
     position: fixed;
     top: 0;
@@ -547,7 +546,7 @@ button:hover {
     box-shadow: var(--shadow);
 }
 
-/* Simulation styles */
+
 .simulation-container {
     margin-top: 1rem;
     padding: 1rem;
@@ -611,7 +610,7 @@ input[type="range"]::-webkit-slider-thumb {
     cursor: pointer;
 }
 
-/* Simulation page styles */
+
 .simulations-container {
     background-color: #cf7171;
     padding: 2rem;
@@ -671,7 +670,7 @@ input[type="range"]::-webkit-slider-thumb {
     width: 100px;
 }
 
-/* Simulation Page Styles */
+
 .simulations-container {
     padding: 20px;
     display: flex;
@@ -768,7 +767,7 @@ input[type="range"]::-webkit-slider-thumb {
     line-height: 1.4;
 }
 
-/* Tournament Status */
+
 .tournament-status {
     margin-bottom: 2rem;
     padding: 1rem;
@@ -786,7 +785,7 @@ input[type="range"]::-webkit-slider-thumb {
     margin-bottom: 1rem;
 }
 
-/* Leaderboard Status Indicators */
+
 .qualified {
     color: #4caf50;
     font-weight: bold;
@@ -809,15 +808,15 @@ td:last-child {
     font-weight: 500;
 }
 
-/* Tournament progress colors */
+
 .tournament-progress p {
     margin: 0.5rem 0;
     font-size: 1.1rem;
 }
 
-/* Component styles with improved contrast */
 
-/* Tables */
+
+
 .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -846,7 +845,7 @@ td:last-child {
     background-color: var(--table-hover);
 }
 
-/* Forms and Inputs */
+
 input, select, textarea {
     background-color: var(--input-background);
     border: 1px solid var(--border-color);
@@ -864,7 +863,7 @@ input:focus, select:focus, textarea:focus {
     box-shadow: 0 0 0 2px rgba(107, 255, 45, 0.2);
 }
 
-/* Buttons */
+
 .button {
     background-color: var(--primary-color);
     color: var(--background-color);
@@ -888,7 +887,6 @@ input:focus, select:focus, textarea:focus {
     cursor: not-allowed;
 }
 
-/* Cards */
 .card {
     background-color: var(--card-background);
     border-radius: 8px;
@@ -907,7 +905,6 @@ input:focus, select:focus, textarea:focus {
     padding-bottom: 0.75rem;
 }
 
-/* Status Messages */
 .error-message {
     color: var(--error-color);
     background-color: rgba(255, 79, 79, 0.1);
@@ -926,7 +923,7 @@ input:focus, select:focus, textarea:focus {
     margin-bottom: 1rem;
 }
 
-/* Links */
+
 a {
     color: var(--link-color);
     text-decoration: none;
@@ -938,7 +935,7 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Page headers and section titles */
+
 .page h2, .section-title {
     color: var(--highlight-yellow);
     font-size: 2rem;
@@ -946,14 +943,13 @@ a:hover {
     text-shadow: 0 0 10px rgba(255, 240, 71, 0.3);
 }
 
-/* Team name highlighting */
+
 .team-card.my-team .team-name {
     color: var(--highlight-yellow);
     font-weight: bold;
     text-shadow: 0 0 8px rgba(255, 240, 71, 0.3);
 }
 
-/* Battle Simulations title */
 .simulations-container h2,
 .simulation-viewer h2 {
     color: var(--highlight-yellow);

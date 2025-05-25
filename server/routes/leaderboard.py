@@ -37,7 +37,7 @@ def round_leaderboard(round_num):
 
 @leaderboard_bp.route("/qualify-round-2", methods=["POST"])
 def qualify_round_2():
-    # Get top 16 teams from round 1
+    #top 16 teams from round 1
     top_teams = (
         db.session.query(
             Team.id,
@@ -51,7 +51,7 @@ def qualify_round_2():
         .all()
     )
 
-    # Update their round to 2
+
     for team_id, _ in top_teams:
         team = Team.query.get(team_id)
         team.round = 2

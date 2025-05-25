@@ -7,7 +7,7 @@ import os
 def create_app():
     app = Flask(__name__)
     
-    # Get absolute paths
+
     server_dir = os.path.abspath(os.path.dirname(__file__))
     project_dir = os.path.dirname(server_dir)
     db_path = os.path.join(server_dir, "progbattle_new.db")
@@ -28,7 +28,7 @@ def create_app():
     db.init_app(app)
     migrate = Migrate(app, db)
 
-    # Blueprints
+
     from routes.auth import auth_bp
     from routes.team import team_bp
     from routes.bot import bot_bp
@@ -39,7 +39,7 @@ def create_app():
     app.register_blueprint(bot_bp)
     app.register_blueprint(leaderboard_bp)
 
-    # Serve frontend
+
     @app.route('/')
     def serve_index():
         try:
@@ -60,7 +60,6 @@ def create_app():
             print(f"Attempting to serve: {file_path}")
             if not os.path.exists(file_path):
                 print(f"File not found: {file_path}")
-                # For SPA, return index.html for non-asset paths
                 if not filename.endswith(('.js', '.css', '.ico', '.png', '.jpg', '.jpeg', '.gif')):
                     return send_file(os.path.join(frontend_dir, 'index.html'))
                 return f"File not found: {filename}", 404
@@ -73,11 +72,11 @@ def create_app():
 
 app = create_app()
 
-# Ensure DB tables are created
+
 with app.app_context():
     db.create_all()
 
-# Route to serve log CSVs
+
 @app.route('/static/<path:filename>')
 def static_logs(filename):
     logs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'logs'))

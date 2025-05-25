@@ -10,7 +10,7 @@ ProgBattle is a full-stack web application for hosting a programming tournament.
 
 - User registration and login
 - cannot view any other page ig not logged in 
-- round 1 (functional) and support for round-2 (non functional) :( 
+- round 1 (functional) and support for round-2 (non-functional) :( 
 - Team creation, joining, and management (max 4 members per team)
 - user can also leave the team as well as long as he/she is not the one who created the team
 - Bot script upload and evaluation against system bots
