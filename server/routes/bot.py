@@ -64,7 +64,7 @@ def run_game(bot_file):
 def maybe_qualify_for_round_2():
     completed_teams = (
         db.session.query(func.count(Team.id))
-        .filter(Team.round == 1, Team.matches_played >= 10)
+        .filter(Team.round == 1, Team.matches_played >= 5)
         .scalar()
     )
     
@@ -114,8 +114,8 @@ def submit_bot():
     if not team:
         return jsonify({"error": "Team not found"}), 404
 
-    if team.round == 1 and team.matches_played >= 10:
-        return jsonify({"error": "Maximum matches (10) already played for Round 1"}), 400
+    if team.round == 1 and team.matches_played >= 5:
+        return jsonify({"error": "Maximum matches (5) already played for Round 1"}), 400
 
     bot_file = request.files["bot_file"]
     if bot_file.filename == "":
@@ -153,7 +153,7 @@ def submit_bot():
         team.matches_played += 1
         
 
-        if team.round == 1 and team.matches_played == 10 and not team.is_qualified:
+        if team.round == 1 and team.matches_played == 5 and not team.is_qualified:
             maybe_qualify_for_round_2()
 
         db.session.commit()
@@ -163,7 +163,7 @@ def submit_bot():
             "your_score": your_points,
             "system_score": system_points,
             "final_score": round(final_score, 2),
-            "matches_remaining": 10 - team.matches_played if team.round == 1 else None,
+            "matches_remaining": 5 - team.matches_played if team.round == 1 else None,
             "log_file": log_filename,
             "details": {
                 "win_bonus": your_points > system_points,

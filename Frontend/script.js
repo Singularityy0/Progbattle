@@ -447,7 +447,7 @@ async function loadLeaderboard(round) {
         // Update tournament status
         const statusDiv = document.querySelector('.tournament-status');
         if (round === 1) {
-            const completedTeams = leaderboard.filter(t => t.matches_played >= 10).length;
+            const completedTeams = leaderboard.filter(t => t.matches_played >= 5).length;
             statusDiv.innerHTML = `
                 <div class="tournament-progress">
                     <h3>Round 1 Progress</h3>
@@ -465,21 +465,21 @@ async function loadLeaderboard(round) {
         tbody.innerHTML = leaderboard.map((entry, index) => {
             let status = '';
             if (round === 1) {
-                if (entry.matches_played >= 10) {
+                if (entry.matches_played >= 5) {
                     status = entry.is_qualified ? 
                         '<span class="qualified">Qualified for Round 2! 🏆</span>' : 
                         '<span class="completed">All matches completed</span>';
                 } else {
-                    status = `${10 - entry.matches_played} matches remaining`;
+                    status = `${5 - entry.matches_played} matches remaining`;
                 }
             }
             
             return `
-                <tr class="${entry.is_qualified ? 'qualified' : ''} ${entry.matches_played >= 10 ? 'completed' : ''}">
+                <tr class="${entry.is_qualified ? 'qualified' : ''} ${entry.matches_played >= 5 ? 'completed' : ''}">
                     <td>${index + 1}</td>
                     <td>${entry.team_name}</td>
                     <td>${entry.total_score.toFixed(1)}</td>
-                    <td>${entry.matches_played}/10</td>
+                    <td>${entry.matches_played}/5</td>
                     <td>${status}</td>
                 </tr>
             `;
