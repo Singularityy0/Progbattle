@@ -307,6 +307,7 @@ The backend uses **SQLite** (file: `progbattle_new.db`) with SQLAlchemy ORM for 
 ## Note 
 - I tried deploying the website to https://progbattle.onrender.com/ but I dont know how to fix this , for some reason it shows "an error occured" when I try to Register
 - maybe it's not able to create the database or something
+- added Demo video [Demo Video](https://drive.google.com/file/d/12VcVwi1txeUMGWzI5f9P30sDa5B1olhc/view?usp=sharing)
 
 ## sources used 
 [Flask 1](https://www.youtube.com/watch?v=oQ5UfJqW5Jo)
