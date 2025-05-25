@@ -264,6 +264,20 @@ The backend uses **SQLite** (file: `progbattle_new.db`) with SQLAlchemy ORM for 
 - I tried deploying the website to https://progbattle.onrender.com/ but I dont know how to fix this , for some reason it shows "an error occured" when I try to Register
 - maybe it's not able to create the database or something
 
+## sources used 
+[Flask 1](https://www.youtube.com/watch?v=oQ5UfJqW5Jo)
+---
+[Flask tutorial1](https://www.youtube.com/watch?v=Z1RJmh_OqeA)
+---
+[Portfolio Tut](https://www.youtube.com/watch?v=xV7S8BhIeBo)
+---
+[javascript for frontend](https://www.youtube.com/watch?v=lfmg-EJ8gm4)
+---
+[deepseek](https://chat.deepseek.com/)
+---
+[chatGPT](chat.com)
+## NOTE 
+```LLMs were used to understand and resolve errors and improve on the broilerplate or already written code , like improving CSS and JS functions.```
 
 
 
